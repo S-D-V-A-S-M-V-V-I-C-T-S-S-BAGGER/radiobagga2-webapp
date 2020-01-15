@@ -1,4 +1,3 @@
-import tendo as tendo
 from flask import Flask, jsonify
 import subprocess
 import threading
@@ -7,7 +6,6 @@ import signal
 import atexit
 
 from tendo import singleton
-from random import shuffle
 
 app = Flask(__name__, static_url_path='')
 
