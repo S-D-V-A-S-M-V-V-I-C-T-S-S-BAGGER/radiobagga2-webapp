@@ -5,9 +5,9 @@ import subprocess
 import threading
 
 import requests
+from dotenv import load_dotenv
 from flask import Flask, jsonify, request
 from tendo import singleton
-from dotenv import load_dotenv
 
 app = Flask(__name__, static_url_path='')
 load_dotenv(os.path.join(os.path.dirname(__file__), '.env'))
@@ -34,8 +34,8 @@ def play_loop():
             radio_name = 'BAGGAFM'
 
             p = subprocess.Popen(["sox -t raw -c 2 -r 44k -e signed-integer -L -b 16 /opt/music/spotify -t .wav - | "
-                                  "pi_fm_rds -freq %s -pi 6969 -ps \"%s\" -rt \"%s\" -audio -" % (
-                                      frequency, radio_name, radio_text)],
+                                  "pi_fm_rds -freq %s -pi 6969 -ps \"%s\" -rt \"%s\" -ctl /opt/music/spotify_text "
+                                  "-audio -" % (frequency, radio_name, radio_text)],
                                  preexec_fn=os.setsid, shell=True)
 
             p.communicate()
@@ -65,7 +65,12 @@ def update():
     if r.status_code == 200:
         data = r.json()
         radio_text = data['artists'][0]['name'] + ' - ' + data['name']
-        print(radio_text)
+        with open('/opt/music/spotify_text', 'w') as pipe:
+            pipe.write('RT ' + radio_text)
+            return jsonify(success=True)
+
+    else:
+        return jsonify(success=False)
 
 
 def shutdown():
