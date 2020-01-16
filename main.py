@@ -59,11 +59,13 @@ def update():
     global radio_text
     track_id = request.form['id']
     r = requests.get("https://api.spotify.com/v1/tracks/" + track_id + "?market=NL",
-                     {'Accept': 'application/json', 'Content-Type': 'application/json',
-                      'Authorization': 'Bearer ' + os.getenv("SPOTIFY_API_KEY")})
-    data = r.json()
-    radio_text = data['artist'] + ' - ' + data['name']
-    print(radio_text)
+                     headers={'Accept': 'application/json', 'Content-Type': 'application/json',
+                              'Authorization': 'Bearer ' + os.getenv("SPOTIFY_API_KEY")})
+
+    if r.status_code == 200:
+        data = r.json()
+        radio_text = data['artists'][0]['name'] + ' - ' + data['name']
+        print(radio_text)
 
 
 def shutdown():
