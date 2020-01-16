@@ -16,7 +16,6 @@ p = None
 @app.before_first_request
 def startup():
     threading.Thread(target=play_loop).start()
-    return jsonify(success=True)
 
 
 def play_loop():
@@ -40,6 +39,7 @@ def play_loop():
 def start():
     global playing
     playing = True
+    return jsonify(success=True)
 
 
 @app.route('/stop')
