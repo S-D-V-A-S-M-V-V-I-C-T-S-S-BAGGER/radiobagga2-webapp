@@ -66,8 +66,9 @@ def update():
         data = r.json()
         radio_text = data['artists'][0]['name'] + ' - ' + data['name']
         with open('/opt/music/spotify_text', 'w') as pipe:
-            pipe.write('RT ' + radio_text)
-            return jsonify(success=True)
+            pipe.write('RT ' + radio_text + '\n')
+            pipe.close()
+        return jsonify(success=True)
 
     else:
         return jsonify(success=False)
