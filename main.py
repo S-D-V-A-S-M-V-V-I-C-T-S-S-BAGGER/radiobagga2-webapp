@@ -7,8 +7,10 @@ import threading
 import requests
 from flask import Flask, jsonify, request
 from tendo import singleton
+from dotenv import load_dotenv
 
 app = Flask(__name__, static_url_path='')
+load_dotenv(os.path.join(os.path.dirname(__file__), '.env'))
 
 playing = False
 p = None
@@ -31,8 +33,10 @@ def play_loop():
             frequency = '107.5'
             radio_name = 'BAGGAFM'
 
-            p = subprocess.Popen(['sox', "-t raw -c 2 -r 44k -e signed-integer -L -b 16 /opt/music/spotify -t .wav - | pi_fm_rds -freq %s -pi 6969 -ps %s -rt %s -audio -" % (frequency, radio_name, radio_text)],
-                                 preexec_fn=os.setsid)
+            p = subprocess.Popen(["sox -t raw -c 2 -r 44k -e signed-integer -L -b 16 /opt/music/spotify -t .wav - | "
+                                  "pi_fm_rds -freq %s -pi 6969 -ps \"%s\" -rt \"%s\" -audio -" % (
+                                      frequency, radio_name, radio_text)],
+                                 preexec_fn=os.setsid, shell=True)
 
             p.communicate()
 
@@ -56,7 +60,7 @@ def update():
     track_id = request.form['id']
     r = requests.get("https://api.spotify.com/v1/tracks/" + track_id + "?market=NL",
                      {'Accept': 'application/json', 'Content-Type': 'application/json',
-                      'Authorization': 'Bearer ' + os.environ['SPOTIFY_API_TOKEN']})
+                      'Authorization': 'Bearer ' + os.getenv("SPOTIFY_API_KEY")})
     data = r.json()
     radio_text = data['artist'] + ' - ' + data['name']
     print(radio_text)
