@@ -54,15 +54,12 @@ def stop():
 @app.route('/update')
 def update():
     global radio_text
-
-    track_id = request.args.get('id', default='0')
-    if track_id != '0':
-        r = requests.get("https://api.spotify.com/v1/tracks/" + track_id + "?market=NL",
-                         {'Accept': 'application/json', 'Content-Type': 'application/json',
-                          'Authorization': 'Bearer ' + os.environ['SPOTIFY_API_TOKEN']})
-        data = r.json()
-        radio_text = data['artist'] + ' - ' + data['name']
-        print(radio_text)
+    r = requests.get("https://api.spotify.com/v1/tracks/" + os.environ['TRACK_ID'] + "?market=NL",
+                     {'Accept': 'application/json', 'Content-Type': 'application/json',
+                      'Authorization': 'Bearer ' + os.environ['SPOTIFY_API_TOKEN']})
+    data = r.json()
+    radio_text = data['artist'] + ' - ' + data['name']
+    print(radio_text)
 
 
 def shutdown():
