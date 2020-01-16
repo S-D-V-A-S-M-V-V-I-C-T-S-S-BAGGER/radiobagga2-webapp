@@ -32,7 +32,7 @@ def play_loop():
 
             # p = subprocess.Popen(runstr.format(frequency, radio_name, radio_text), preexec_fn=os.setsid)
 
-            p = subprocess.Popen("sudo huts", preexec_fn=os.setsid)
+            p = subprocess.Popen(['sudo', 'huts'], preexec_fn=os.setsid)
             p.communicate()
 
 
@@ -53,7 +53,6 @@ def shutdown():
 
 
 atexit.register(shutdown)
-
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=80)
