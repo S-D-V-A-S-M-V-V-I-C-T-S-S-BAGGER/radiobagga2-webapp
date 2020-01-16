@@ -16,6 +16,7 @@ p = None
 @app.before_first_request
 def startup():
     threading.Thread(target=play_loop).start()
+    return jsonify(success=True)
 
 
 def play_loop():
@@ -52,3 +53,7 @@ def shutdown():
 
 
 atexit.register(shutdown)
+
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=80)
