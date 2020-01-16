@@ -1,10 +1,10 @@
-from flask import Flask, jsonify
-import subprocess
-import threading
+import atexit
 import os
 import signal
-import atexit
+import subprocess
+import threading
 
+from flask import Flask, jsonify
 from tendo import singleton
 
 app = Flask(__name__, static_url_path='')
@@ -31,7 +31,7 @@ def play_loop():
 
             # p = subprocess.Popen(runstr.format(frequency, radio_name, radio_text), preexec_fn=os.setsid)
 
-            p = subprocess.Popen("huts", preexec_fn=os.setsid)
+            p = subprocess.Popen("sudo huts", preexec_fn=os.setsid)
             p.communicate()
 
 
@@ -42,9 +42,13 @@ def start():
 
 
 @app.route('/stop')
+def stop():
+    shutdown()
+    return jsonify(success=True)
+
+
 def shutdown():
     os.killpg(os.getpgid(p.pid), signal.SIGTERM)
-    return jsonify(success=True)
 
 
 atexit.register(shutdown)
