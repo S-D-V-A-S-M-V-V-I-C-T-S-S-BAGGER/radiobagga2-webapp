@@ -31,9 +31,7 @@ def play_loop():
             frequency = '107.5'
             radio_name = 'BAGGAFM'
 
-            p = subprocess.Popen(['sox', '-t raw', '-c 2', '-r 44k', '-e signed-integer', '-L', '-b 16',
-                                  '/opt/music/spotify', '-t .wav', '-', '|', 'pi_fm_rds', '-freq', frequency,
-                                  '-pi 6969', '-ps', radio_name, '-rt', radio_text, '-audio', '-'],
+            p = subprocess.Popen(['sox', "-t raw -c 2 -r 44k -e signed-integer -L -b 16 /opt/music/spotify -t .wav - | pi_fm_rds -freq %s -pi 6969 -ps %s -rt %s -audio -" % (frequency, radio_name, radio_text)],
                                  preexec_fn=os.setsid)
 
             p.communicate()
