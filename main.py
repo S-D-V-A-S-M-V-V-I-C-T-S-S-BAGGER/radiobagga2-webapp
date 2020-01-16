@@ -10,7 +10,6 @@ from flask import Flask, jsonify, request
 from tendo import singleton
 
 app = Flask(__name__, static_url_path='')
-load_dotenv(os.path.join(os.path.dirname(__file__), '.env'))
 
 playing = False
 p = None
@@ -57,6 +56,7 @@ def stop():
 @app.route('/update', methods=['POST'])
 def update():
     global radio_text
+    load_dotenv(os.path.join(os.path.dirname(__file__), '.env'))
     track_id = request.form['id']
     r = requests.get("https://api.spotify.com/v1/tracks/" + track_id + "?market=NL",
                      headers={'Accept': 'application/json', 'Content-Type': 'application/json',
@@ -65,9 +65,7 @@ def update():
     if r.status_code == 200:
         data = r.json()
         radio_text = data['artists'][0]['name'] + ' - ' + data['name']
-        with open('/opt/music/spotify_text', 'w') as pipe:
-            pipe.write('RT ' + radio_text + '\n')
-            pipe.close()
+        subprocess.call(f'echo "RT {radio_text}" >/opt/music/spotify_text', shell=True)
         return jsonify(success=True)
 
     else:
