@@ -33,7 +33,7 @@ def play_loop():
             radio_name = 'BAGGAFM'
 
             p = subprocess.Popen(["sox -t raw -c 2 -r 44k -e signed-integer -L -b 16 /opt/music/spotify -t .wav - | "
-                                  "pi_fm_rds -freq %s -pi 6969 -ps \"%s\" -rt \"%s\" -ctl /opt/music/spotify_text "
+                                  "pi_fm_rds -freq %s -pi 6969 -ps \"%s\" -rt \"%s\" "
                                   "-audio -" % (frequency, radio_name, radio_text)],
                                  preexec_fn=os.setsid, shell=True)
 
@@ -56,6 +56,7 @@ def stop():
 @app.route('/update', methods=['POST'])
 def update():
     global radio_text
+    global playing
     load_dotenv(os.path.join(os.path.dirname(__file__), '.env'))
     track_id = request.form['id']
     r = requests.get("https://api.spotify.com/v1/tracks/" + track_id + "?market=NL",
@@ -65,7 +66,11 @@ def update():
     if r.status_code == 200:
         data = r.json()
         radio_text = data['artists'][0]['name'] + ' - ' + data['name']
-        subprocess.call(f'echo "RT {radio_text}" >/opt/music/spotify_text', shell=True)
+
+        # Restart FM playback when updating the radio text
+        shutdown()
+        playing = True
+
         return jsonify(success=True)
 
     else:
