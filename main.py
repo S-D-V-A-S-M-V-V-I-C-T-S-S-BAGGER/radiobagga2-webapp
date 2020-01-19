@@ -29,7 +29,7 @@ def play_loop():
 
     while True:
         if playing:
-            frequency = '107.5'
+            frequency = '107.3'
             radio_name = 'BAGGAFM'
 
             p = subprocess.Popen(["sox -t raw -c 2 -r 44k -e signed-integer -L -b 16 /opt/music/spotify -t .wav - | "
