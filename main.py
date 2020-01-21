@@ -65,7 +65,10 @@ def update():
     if r.status_code == 200:
         data = r.json()
         radio_text = data['artists'][0]['name'] + ' - ' + data['name']
-        subprocess.call(f'echo "RT {radio_text}" >/opt/music/radio_text', shell=True)
+        pipe = open('/opt/music/radio_text', 'w', 0)
+        pipe.write(f"RT {radio_text}\n")
+        pipe.flush()
+        pipe.close()
         return jsonify(success=True)
 
     else:
