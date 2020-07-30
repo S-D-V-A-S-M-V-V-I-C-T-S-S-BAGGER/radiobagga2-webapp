@@ -33,7 +33,7 @@ def play_loop():
             radio_name = 'BAGGAFM'
 
             p = subprocess.Popen(["sox -t raw -c 2 -r 44k -e signed-integer -L -b 16 /opt/music/spotify -t .wav - | "
-                                  "pi_fm_rds -freq %s -pi 6969 -ps \"%s\" -rt \"%s\" -ctl /opt/music/radio_text "
+                                  "pi_fm_rds -freq %s -pi 6969 -ps \"%s\" -rt \"%s\" -ctl rds_ctl "
                                   "-audio -" % (frequency, radio_name, radio_text)],
                                  preexec_fn=os.setsid, shell=True)
 
@@ -53,6 +53,14 @@ def stop():
     return jsonify(success=True)
 
 
+@app.route('/reset')
+def reset_process():
+    stop()
+    os.system('service raspotify restart')
+    start()
+    return jsonify(success=True)
+
+
 @app.route('/update', methods=['POST'])
 def update():
     global radio_text
@@ -65,8 +73,8 @@ def update():
     if r.status_code == 200:
         data = r.json()
         radio_text = data['artists'][0]['name'] + ' - ' + data['name']
-        pipe = open('/opt/music/radio_text', 'w', 0)
-        pipe.write(f"RT {radio_text}\n")
+        pipe = open('/home/pi/pipe', 'w')
+        pipe.write(f"RT {radio_text}")
         pipe.flush()
         pipe.close()
         return jsonify(success=True)
